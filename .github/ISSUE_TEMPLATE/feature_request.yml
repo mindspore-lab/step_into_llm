@@ -1,0 +1,39 @@
+name: 🚀 Feature request
+description: Suggest an idea for this project
+title: "[Feature] "
+
+body:
+- type: checkboxes
+  attributes:
+    label: Checklist
+    options:
+    - label: 1. I have read [Contributing Guidlines](https://github.com/xing-yiren/course_organization_template/wiki/%F0%9F%A7%AD-Contributing-Guidelines:-Issues-&-Pull-Requests).
+    - label: 2. If the issue you raised is not a feature but a question, please raise a discussion at [Discussions](https://github.com/xing-yiren/course_organization_template/discussions/new/choose) Otherwise, it will be closed.
+- type: textarea
+  attributes:
+    label: Motivation
+    description: |
+      A clear and concise description of the motivation of the feature.
+  validations:
+    required: true
+- type: checkboxes
+  id: hardware
+  attributes:
+    label: Hardware Environment
+    description: Which hardware does this feature need to support (select all that apply)?
+    options:
+      - label: Ascend
+      - label: GPU
+      - label: CPU
+  validations:
+    required: true  
+- type: textarea
+  attributes:
+    label: Related resources
+    description: |
+      If there is an official code release or third-party implementations, please also provide the information here, which would be very helpful.
+- type: textarea
+  attributes:
+    label: Your Contribution
+    description: |
+      Is there any way that you could help, e.g., by submitting a PR?

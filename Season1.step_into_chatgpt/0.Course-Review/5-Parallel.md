@@ -50,13 +50,13 @@
 
 - 内存优化
     1. 重计算
-    
+
         <div align="center"><img src="./assets/5.parallel/recompute.png" alt="recompute"></div>
 
         时间换空间：重计算技术可以不保存正向计算结果，让该内存可以被复用，然后在计算反向部分时，重新计算出正向结果。
-    
+
     2. 优化器并行——ZeRO
-    
+
         <div align="center"><img src="./assets/5.parallel/optimizer_parallel.png" alt="optimizer-parallel"></div>
 
         将参数和梯度分组放到不同卡上更新，再通过通信广播操作在设备间共享更新后的权值。

@@ -9,7 +9,7 @@ GPT-1是更早于BERT提出了预训练语言模型（Pre-train+Fine-tune）的�
 ## 1. 课程回顾
 
 - Semi-Supervised Learning
-- Unsupervised Pretraining 
+- Unsupervised Pretraining
     - 模型预训练优化目标
     - 模型结构
 - Supervised Fine-tuning

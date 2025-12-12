@@ -1,9 +1,0 @@
-mindspore
-mindnlp
-PyMuPDF
-ms2vec
-msimilarities
-loguru
-jieba
-gradio
-PyPDF2

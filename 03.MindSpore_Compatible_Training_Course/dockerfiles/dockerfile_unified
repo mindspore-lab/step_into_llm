@@ -1,0 +1,153 @@
+FROM registry.cn-hangzhou.aliyuncs.com/acs/ubuntu:22.04 as builder
+
+ARG PYTHONPATH_PREFIX=/usr/local/python3.10.14
+ARG CANN_PREFIX=/usr/local/Ascend
+ARG ASCEND_TOOLKIT_HOME=$CANN_PREFIX/ascend-toolkit/latest
+ENV DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /tmp
+# 安装基础依赖包
+RUN sed -i "s@http://ports.ubuntu.com@https://mirrors.aliyun.com@g" /etc/apt/sources.list && \
+    apt-get -o "Acquire::https::Verify-Peer=false" update && \
+    apt-get -o "Acquire::https::Verify-Peer=false" install -y --no-install-recommends --fix-missing ca-certificates && \
+    apt-get -o "Acquire::https::Verify-Peer=false" install -y --no-install-recommends --fix-missing gawk \
+    bison make sudo bzip2 pkg-config tar numactl libtool  libzip-dev libopenblas-dev libblas3 liblapack3 build-essential autoconf \
+    gcc g++ python3-dev tcl patch libnuma-dev vim cmake tree pkg-config unzip libspdlog-dev git \
+    net-tools lsof iputils-ping openssh-server nginx pciutils flex ca-certificates apt-utils lzma liblzma-dev \
+    libssl-dev htop libcurl4-openssl-dev libexpat1-dev gettext automake libtool build-essential libgmp-dev libmpfr-dev \
+    liblapack-dev libblas-dev gfortran libhdf5-dev libmpc-dev zlib1g-dev libbz2-dev libssl-dev libncurses5-dev libsqlite3-dev libreadline-dev tk-dev libgdbm-dev \
+    libdb-dev libxml2 libfreetype6-dev libpng-dev libgl1-mesa-glx bc libpcap-dev xz-utils git-lfs less wget zip curl unzip libexpat1-dev liblzma-dev libffi-dev libc6-dev &&  \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# 安装python
+RUN cd /tmp/ && wget https://mirrors.huaweicloud.com/python/3.10.14/Python-3.10.14.tgz --no-check-certificate
+RUN cd /tmp/ && tar -xzf Python-3.10.14.tgz
+RUN cd /tmp/Python-3.10.14/ && ls && ./configure --prefix=$PYTHONPATH_PREFIX \
+--enable-shared --with-ensurepip=install --enable-loadable-sqlite-extensions --enable-optimizations && make -j32 && \
+make install
+ENV PATH=$PYTHONPATH_PREFIX/bin:$PATH
+ENV LD_PRELOAD=$PYTHONPATH_PREFIX/lib/libpython3.10.so.1.0:$LD_PRELOAD
+RUN ln -s $PYTHONPATH_PREFIX/bin/python3 /usr/bin/python && ln -s $PYTHONPATH_PREFIX/bin/pip3 /usr/bin/pip
+RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple && \
+    pip config set install.trusted-host mirrors.aliyun.com && \
+    pip install --upgrade pip==24.0
+RUN pip install attrs numpy==1.21.2 decorator sympy cffi pyyaml pathlib2 psutil protobuf scipy==1.10.1 requests absl-py gnureadline word2number jsonlines
+
+#安装CANN包
+COPY Ascend-cann-kernels-910b_8.2.RC1_linux-aarch64.run /tmp/
+COPY Ascend-cann-toolkit_8.2.RC1_linux-aarch64.run /tmp/
+RUN bash ./Ascend-cann-toolkit*.run --quiet --install --install-for-all --install-path=$CANN_PREFIX  && \
+    bash ./Ascend-cann-kernels*.run --quiet --install-path=$CANN_PREFIX --install
+# COPY requirements.txt /tmp/
+#安装依赖包modelarts与mindformers ModelArts moxing包依赖pip==24.0
+RUN pip install --upgrade pip setuptools wheel
+
+
+FROM registry.cn-hangzhou.aliyuncs.com/acs/ubuntu:22.04
+ARG PYTHONPATH_PREFIX=/usr/local/python3.10.14
+ARG CANN_PREFIX=/usr/local/Ascend
+ARG ASCEND_TOOLKIT_HOME=$CANN_PREFIX/ascend-toolkit/latest
+ENV DEBIAN_FRONTEND=noninteractive
+# 安装基础依赖包
+RUN sed -i "s@http://ports.ubuntu.com@https://mirrors.aliyun.com@g" /etc/apt/sources.list && \
+    apt-get -o "Acquire::https::Verify-Peer=false" update && \
+    apt-get -o "Acquire::https::Verify-Peer=false" install -y --no-install-recommends --fix-missing ca-certificates && \
+    apt-get -o "Acquire::https::Verify-Peer=false" install -y --no-install-recommends --fix-missing gawk \
+    bison make sudo bzip2 pkg-config tar numactl libtool  libzip-dev libopenblas-dev libblas3 liblapack3 build-essential autoconf \
+    gcc g++ python3-dev tcl patch libnuma-dev vim cmake tree pkg-config unzip libspdlog-dev git \
+    net-tools lsof iputils-ping openssh-server nginx pciutils flex ca-certificates apt-utils lzma liblzma-dev \
+    libssl-dev htop libcurl4-openssl-dev libexpat1-dev gettext automake libtool build-essential libgmp-dev libmpfr-dev \
+    liblapack-dev libblas-dev gfortran libhdf5-dev libmpc-dev zlib1g-dev libbz2-dev libssl-dev libncurses5-dev libsqlite3-dev libreadline-dev tk-dev libgdbm-dev \
+    libdb-dev libxml2 libfreetype6-dev libpng-dev libgl1-mesa-glx bc libpcap-dev xz-utils git-lfs less wget zip curl unzip libexpat1-dev liblzma-dev libffi-dev libc6-dev &&  \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+# 适配MA环境执行下述命令
+RUN set -ex && \
+    default_user=$(getent passwd 1000 | awk -F ':' '{print $1}') || echo "uid: 1000 does not exist" && \
+    default_group=$(getent group 100 | awk -F ':' '{print $1}') || echo "gid: 100 does not exist" && \
+    if [ ! -z ${default_user} ]; then \
+    userdel -r ${default_user}; \
+    fi && \
+    if [ ! -z ${default_group} ]; then \
+    groupdel -f ${default_group}; \
+    fi
+RUN groupadd -g 100 ma-group  && useradd -d /home/ma-user -m -u 1000 -g 100 -s /bin/bash ma-user && chmod o+w /usr/local/
+COPY --chown=ma-user:ma-group --from=builder $PYTHONPATH_PREFIX $PYTHONPATH_PREFIX
+COPY --chown=ma-user:ma-group --from=builder $CANN_PREFIX $CANN_PREFIX
+COPY --chown=ma-user:ma-group --from=builder $ASCEND_TOOLKIT_HOME $ASCEND_TOOLKIT_HOME
+# 非MA环境root用户
+# COPY --from=builder $PYTHONPATH_PREFIX $PYTHONPATH_PREFIX
+# COPY --from=builder $CANN_PREFIX $CANN_PREFIX
+# COPY --from=builder $ASCEND_TOOLKIT_HOME $ASCEND_TOOLKIT_HOME
+RUN ln -s $PYTHONPATH_PREFIX/bin/python3 /usr/bin/python && ln -s $PYTHONPATH_PREFIX/bin/pip3 /usr/bin/pip
+RUN chown ma-user:ma-group /usr/bin/python /usr/bin/pip
+RUN usermod -aG sudo ma-user && \
+    echo 'ma-user ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+#清理环境
+RUN rm -rf /tmp/*
+USER ma-user
+WORKDIR /home/ma-user
+# 以非交互式shell启动需要使用ENV指定环境变量
+ENV ASCEND_TOOLKIT_HOME=$CANN_PREFIX/ascend-toolkit/latest
+ENV PATH=$PYTHONPATH_PREFIX/bin:$PATH
+ENV LD_PRELOAD=$PYTHONPATH_PREFIX/lib/libpython3.10.so.1.0:$LD_PRELOAD
+ENV LD_LIBRARY_PATH=$CANN_PREFIX/driver/lib64:$CANN_PREFIX/driver/lib64/common:$CANN_PREFIX/driver/lib64/driver:$CANN_PREFIX/driver/tools/hccn_tool/
+ENV LD_LIBRARY_PATH=${ASCEND_TOOLKIT_HOME}/lib64:${ASCEND_TOOLKIT_HOME}/lib64/plugin/opskernel:${ASCEND_TOOLKIT_HOME}/lib64/plugin/nnengine:${ASCEND_TOOLKIT_HOME}/opp/built-in/op_impl/ai_core/tbe/op_tiling/lib/linux/$(arch):$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=${ASCEND_TOOLKIT_HOME}/tools/aml/lib64:${ASCEND_TOOLKIT_HOME}/tools/aml/lib64/plugin:$LD_LIBRARY_PATH
+ENV PYTHONPATH=${ASCEND_TOOLKIT_HOME}/python/site-packages:${ASCEND_TOOLKIT_HOME}/opp/built-in/op_impl/ai_core/tbe:$PYTHONPATH
+ENV PATH=${ASCEND_TOOLKIT_HOME}/bin:${ASCEND_TOOLKIT_HOME}/compiler/ccec_compiler/bin:${ASCEND_TOOLKIT_HOME}/tools/ccec_compiler/bin:$PATH
+ENV ASCEND_AICPU_PATH=${ASCEND_TOOLKIT_HOME}
+ENV ASCEND_OPP_PATH=${ASCEND_TOOLKIT_HOME}/opp
+ENV TOOLCHAIN_HOME=${ASCEND_TOOLKIT_HOME}/toolkit
+ENV ASCEND_HOME_PATH=${ASCEND_TOOLKIT_HOME}
+ENV PYTHONUNBUFFERED=1
+ENV HCCL_EXEC_TIMEOUT=7200
+# 写入到全局环境变量,确保终端切换时能被访问
+RUN echo "export ASCEND_TOOLKIT_HOME=${ASCEND_TOOLKIT_HOME}" >> ~/.bashrc && \
+echo "export PATH=${PATH}" >> ~/.bashrc && \
+echo "export LD_PRELOAD=${LD_PRELOAD}" >> ~/.bashrc && \
+echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> ~/.bashrc && \
+echo "export PYTHONPATH=${PYTHONPATH}" >> ~/.bashrc && \
+echo "export ASCEND_AICPU_PATH=${ASCEND_AICPU_PATH}" >> ~/.bashrc && \
+echo "export ASCEND_OPP_PATH=${ASCEND_OPP_PATH}" >> ~/.bashrc && \
+echo "export TOOLCHAIN_HOME=${TOOLCHAIN_HOME}" >> ~/.bashrc && \
+echo "export ASCEND_HOME_PATH=${ASCEND_HOME_PATH}" >> ~/.bashrc && \
+echo "export PYTHONUNBUFFERED=1" >> ~/.bashrc && \
+echo "export HCCL_EXEC_TIMEOUT=7200" >> ~/.bashrc
+# 安装mindspore
+RUN set -ex && \
+    pip config set global.index-url https://mirrors.aliyun.com/pypi/simple && \
+    pip config set install.trusted-host mirrors.aliyun.com && \
+    pip install mindspore==2.7.1 -i https://repo.mindspore.cn/pypi/simple --trusted-host repo.mindspore.cn --extra-index-url https://repo.huaweicloud.com/repository/pypi/simple
+
+#设置终端颜色
+RUN echo 'color_prompt=yes' >> ~/.bashrc && \
+         echo 'if [ "$color_prompt" = yes ]; then' >> ~/.bashrc && \
+         echo '    PS1="${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[0;34m\]@\[\033[0;35m\]\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]\$ "' >> ~/.bashrc && \
+         echo 'else' >> ~/.bashrc && \
+         echo '    PS1="${debian_chroot:+($debian_chroot)}\u@\h:\W\$ "' >> ~/.bashrc && \
+         echo 'fi' >> ~/.bashrc && \
+         echo 'export CC=/usr/bin/gcc' >> ~/.bashrc && \
+         echo 'export CXX=/usr/bin/g++' >> ~/.bashrc && \
+         echo 'export TMOUT=300000000000' >> ~/.bashrc
+RUN pip install ipykernel && \
+            
+
+USER root
+RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple && pip config set install.trusted-host mirrors.aliyun.com   
+RUN echo "export ASCEND_TOOLKIT_HOME=${ASCEND_TOOLKIT_HOME}" >> ~/.bashrc && \
+echo "export PATH=${PATH}" >> ~/.bashrc && \
+echo "export LD_PRELOAD=${LD_PRELOAD}" >> ~/.bashrc && \
+echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> ~/.bashrc && \
+echo "export PYTHONPATH=${PYTHONPATH}" >> ~/.bashrc && \
+echo "export ASCEND_AICPU_PATH=${ASCEND_AICPU_PATH}" >> ~/.bashrc && \
+echo "export ASCEND_OPP_PATH=${ASCEND_OPP_PATH}" >> ~/.bashrc && \
+echo "export TOOLCHAIN_HOME=${TOOLCHAIN_HOME}" >> ~/.bashrc && \
+echo "export ASCEND_HOME_PATH=${ASCEND_HOME_PATH}" >> ~/.bashrc && \
+echo "export PYTHONUNBUFFERED=1" >> ~/.bashrc && \
+echo "export HCCL_EXEC_TIMEOUT=7200" >> ~/.bashrc
+
+USER ma-user
+WORKDIR /home/ma-user

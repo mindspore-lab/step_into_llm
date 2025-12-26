@@ -1,15 +1,12 @@
 <div align=center>
-  <h1>课程名称</h1>
-  <p><a href="./README.md">View English</a></p>
+  <h1>MindSpore Transformers LLM大模型全流程应用</h1>
 </div>
 
-（1-2句话点名项目核心价值）项目仓介绍。
+本课程基于 MindSpore Transformers 打造，将带你从 0 到 1 完成预训练、微调、推理部署与高阶调优，深入了解 MindSpore Transformers 的 Mcore 架构原理，掌握 MindSpore Transformers 如何无缝支持 Hugging Face / vLLM / Megatron-LM 等主流生态。
 
 ## 📢 最新消息
 
-- 2025-10-21 「课程更新」：新增XXX课程，包含完整视频、课件及代码案例。（[查看详情](xxxx)）
-- 2025-10-18 「功能优化」：项目仓完成重构，查找课程资源更清晰，新增PR检查门禁，合入内容更规范。（[查看详情](xxx)）
-- 2025-10-10 「Bug修复」：修复xxxxxx问题，感谢@username的PR贡献。（[查看详情](xxxx)）
+- 2025-12-23 「课程更新」：新增章节1-14，包含视频链接、课件及代码案例。
 
 ## 前置知识
 
@@ -17,65 +14,38 @@
 
 - Python基础
 - Linux命令基础
-- Jupyter基础
 - Docker镜像使用
-
-您可以通过前置学习考试（*待上线*）进行自检。
+- LLM大模型基础
+- MindSpore基础
+- MindSpore Tranformers基础
 
 ## 环境准备
 
-为确保项目仓中实践代码可正常运行，推荐以下环境准备方式。更详细的环境准备指导详见[Wiki](https://github.com/mindspore-courses/MindSpore-Compatible-Distributed-Training-Principles-and-Practices/wiki/Set-Up-Development-Environment)。
-
-### 直接安装依赖
-
-请先确保 Python 版本符合[课程要求](#版本维护)后，进入仓库根目录，执行：
-
-```bash
-pip install requirements.txt
-```
-
-### 使用Docker镜像（*待发布*）
-
-为方便开发者更加便捷地进行代码实践，节约环境准备的时间，我们提供了预装好的基础Dockerfile文件。课程的所有镜像可从[dockerfile](./dockerfile/)获取。本课程镜像文件信息如下，开发者可根据实际需求进行拉取：
-
-镜像基础使用教程详见环境准备Wiki中的[Docker镜像使用](https://github.com/mindspore-courses/MindSpore-Compatible-Distributed-Training-Principles-and-Practices/wiki/Set-Up-Development-Environment)部分。
+为确保项目仓中实践代码可正常运行，推荐参考第二节课准备环境。
 
 ## 课程内容
 
-| 序号 | 课节    | 简介             | 课程资源                  | 能力认证入口 |
-| :-- | :------ | :--------------- | :----------------------- | :---------- |
-| 1   | xxx     | xxx              | [PPT](跳转链接) · [代码](跳转链接) · [视频](跳转链接) · [云沙箱实验](跳转链接) · [学习路径](跳转链接) |  |
-| 2   | xxx     | xxx              | [PPT](跳转链接) · [代码](跳转链接) · [视频](跳转链接) · [云沙箱实验](跳转链接) · [学习路径](跳转链接) | [初级认证入口](xxxx) |
-| 3   | xxx     | xxx              | [PPT](跳转链接) · [代码](跳转链接) · [视频](跳转链接) · [云沙箱实验](跳转链接) · [学习路径](跳转链接) |  |
-| 4   | xxx     | xxx              | [PPT](跳转链接) · [代码](跳转链接) · [视频](跳转链接) · [云沙箱实验](跳转链接) · [学习路径](跳转链接) | [中级认证入口](xxxx) |
+| 序号 | 课节                                          | 课程资源                                                                               |
+|:---|:--------------------------------------------|:-----------------------------------------------------------------------------------|
+| 01 | MindSpore Transformers训推Mcore架构介绍           | [课程材料](./Chapter01) · [视频](https://www.chaspark.com/#/hotspots/1190801989959827456) |
+| 02 | MindSpore Transformers环境安装与镜像制作             | [课程材料](/Chapter2) · [视频](https://www.chaspark.com/#/hotspots/1190804270839119872)  |
+| 03 | MindSpore Transformers LLM预训练与微调介绍与实践       | [课程材料](./Chapter03) · [视频](https://www.chaspark.com/#/hotspots/1190816563291373568) |
+| 04 | MindSpore Transformers LLM数据预处理介绍与实践        | [课程材料](./Chapter04) · [视频](https://www.chaspark.com/#/hotspots/1190814478680743936) |
+| 05 | MindSpore Transformers Safetensors权重详解      | [课程材料](./Chapter05) · [视频](https://www.chaspark.com/#/hotspots/1199514689405050880) |
+| 06 | MindSpore Transformers LLM断点续训介绍与实践         | [课程材料](./Chapter06) · [视频](https://www.chaspark.com/#/hotspots/1199510607707738112) |
+| 07 | MindSpore Transformers 训练在线监控介绍与实践          | [课程材料](./Chapter07) · [视频](https://www.chaspark.com/#/hotspots/1199514987401961472) |
+| 08 | MindSpore Transformers 训练高可用特性介绍            | [课程材料](./Chapter08) · [视频](https://www.chaspark.com/#/live/1199520678120382464)     |
+| 09 | MindSpore Transformers 推理介绍与实践              | [课程材料](./Chapter09) · [视频](https://www.chaspark.com/#/live/1201345035117387776)     |
+| 10 | MindSpore Transformers & vLLM 部署与评测         | [课程材料](./Chapter10) · [视频](https://www.chaspark.com/#/live/1201346062590808064)    |
+| 11 | MindSpore Transformers & Megatron-LM 训练精度比对 | [课程材料](./Chapter11) · [视频](https://www.chaspark.com/#/live/1201348489549320192)    |
+| 12 | MindSpore Transformers & vLLM 推理精度比对        | [课程材料](./Chapter12) · [视频](https://www.chaspark.com/#/live/1201347335292686336)    |
+| 13 | MindSpore Transformers LLM 训练迁移与实践          | [课程材料](./Chapter13) · [视频](https://www.chaspark.com/#/live/1201347902704136192)    |
+| 14 | MindSpore Transformers LLM 推理迁移与实践          | [课程材料](./Chapter14) · [视频](https://www.chaspark.com/#/live/1201349956574253056)    |
 
 ## 版本维护
 
-项目随昇思MindSpore及昇思MindSpore NLP套件迭代同步发布版本，本项目仓每**半年**进行版本发布。
+项目随昇思MindSpore及昇思MindSpore Transformers套件迭代同步发布版本，本项目仓每**半年**进行版本发布。
 
-| 版本名  | Python | MindSpore | MindSpore NLP |
-| :----- | :----- |:------ |:------ |
-| master | xxx    | xxx    | xxx    |
-| r1.0   | xxx    | xxx    | xxx    |
-
-## 常见问题（FAQ）
-
-详见Wiki中[FAQ](https://github.com/mindspore-courses/MindSpore-Compatible-Distributed-Training-Principles-and-Practices/wiki/Developer-FAQ)。
-
-## 贡献与反馈
-
-欢迎各位开发者通过 [Issue](https://github.com/mindspore-courses/MindSpore-Compatible-Distributed-Training-Principles-and-Practices/issues) 提交建议或 bug 反馈，也可直接发起 [PR](https://github.com/mindspore-courses/MindSpore-Compatible-Distributed-Training-Principles-and-Practices/pulls) 进行Bug修复或代码贡献（提交前请参考提交规范，由Committer @username 完成评审合入），你的每一份参与都能让本项目更加完善。
-
-### 提交规范
-
-详见WIKI：[Issue与PR提交规范](https://github.com/mindspore-courses/MindSpore-Compatible-Distributed-Training-Principles-and-Practices/wiki/Contributing-Guidelines)
-
-### 贡献者展示
-
-向本项目的贡献者们致以最诚挚的感谢！
-
-<div align=center style="margin-top: 30px;">
-  <a href="https://github.com/mindspore-courses/MindSpore-Compatible-Distributed-Training-Principles-and-Practices/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=mindspore-courses/MindSpore-Compatible-Distributed-Training-Principles-and-Practices" />
-  </a>
-</div>
+| 版本名 | Python | MindSpore | MindSpore Transformers |
+|:----|:-------|:----------|:-----------------------|
+| dev | 3.11.4 | 2.7.2     | 1.8.0                  |

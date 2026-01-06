@@ -3,7 +3,16 @@ from PIL import Image
 import gradio as gr
 from chatpdf import ChatPDF
 
-model = ChatPDF()
+# 使用延迟加载模式，避免在导入时加载模型
+_model = None
+
+def _get_model():
+    """延迟加载模型"""
+    global _model
+    if _model is None:
+        _model = ChatPDF()
+    return _model
+
 # Function to add text to the chat history
 def add_text(history, text):
     """
@@ -23,6 +32,7 @@ def add_text(history, text):
 
 
 def predict_stream(message, history):
+    model = _get_model()
     history_format = []
     for human, assistant in history:
         history_format.append([human, assistant])
@@ -46,6 +56,7 @@ def generate_response(history, query, btn):
     if not btn:
         raise gr.Error(message='Upload a PDF')
 
+    model = _get_model()
     history_format = []
     for human, assistant in history:
         history_format.append([human, assistant])
@@ -66,6 +77,7 @@ def render_file(file):
         PIL.Image.Image: The rendered page as an image.
     """
     # global n
+    model = _get_model()
     model.reset_corpus(file)
     doc = fitz.open(file.name)
     page = doc[0]

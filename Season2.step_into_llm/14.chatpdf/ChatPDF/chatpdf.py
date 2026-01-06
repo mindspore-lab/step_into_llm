@@ -122,7 +122,7 @@ class ChatPDF:
             self,
             similarity_model: SimilarityABC = None,
             generate_model_type: str = "auto",
-            generate_model_name_or_path: str = "01ai/Yi-6B-Chat",
+            generate_model_name_or_path: str = "01-ai/Yi-6B-Chat",
             lora_model_name_or_path: str = None,
             corpus_files: Union[str, List[str]] = None,
             save_corpus_emb_dir: str = "./corpus_embs/",
@@ -183,7 +183,7 @@ class ChatPDF:
         if rerank_model_name_or_path:
             self.rerank_tokenizer = AutoTokenizer.from_pretrained(rerank_model_name_or_path, mirror='modelscope')
             self.rerank_model = AutoModelForSequenceClassification.from_pretrained(rerank_model_name_or_path, mirror='modelscope')
-            self.rerank_model.set_train(False)
+            self.rerank_model.set_train(mode=False)
         else:
             self.rerank_model = None
             self.rerank_tokenizer = None
@@ -219,7 +219,7 @@ class ChatPDF:
                 peft_name,
             )
             logger.info(f"Loaded peft model from {peft_name}")
-        model.set_train(False)
+        model.set_train(mode=False)
         return model, tokenizer
 
     def _get_chat_input(self):

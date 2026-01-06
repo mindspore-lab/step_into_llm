@@ -1,9 +1,30 @@
-mindspore
-mindnlp
-PyMuPDF
-ms2vec
-msimilarities
-loguru
-jieba
-gradio
-PyPDF2
+# MindSpore & MindNLP 核心依赖（必须锁定版本）
+mindspore==2.6.0
+mindnlp==0.4.1
+
+# PDF处理
+PyMuPDF>=1.26.0
+PyPDF2>=3.0.0
+
+# 相似度检索（基于MindSpore）
+ms2vec>=0.0.2
+msimilarities>=0.0.2
+
+# 日志和中文处理
+loguru>=0.7.0
+jieba>=0.42.1
+
+# Web UI
+gradio>=4.0.0
+
+# 通用依赖（建议版本）
+# numpy<2.0.0,>=1.20.0  # 由mindspore自动安装
+# tokenizers==0.19.1    # 由mindnlp自动安装
+# sentencepiece>=0.1.99 # 由mindnlp自动安装
+# protobuf>=3.13.0      # 由mindspore自动安装
+# scipy>=1.5.4          # 由mindspore自动安装
+# pillow>=10.0.0        # 由mindspore自动安装
+
+# 可选：用于开发和测试
+# pytest>=7.0.0
+# ipython>=8.0.0

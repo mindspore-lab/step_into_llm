@@ -68,10 +68,9 @@ if __name__ == '__main__':
         avatar_images=(
             os.path.join(pwd_path, "assets/user.png"),
             os.path.join(pwd_path, "assets/llama.png"),
-        ), bubble_full_width=False)
+        ))
     title = " 🎉ChatPDF WebUI🎉 "
     description = "Link in Github: [lvyufeng/ChatPDF](https://github.com/lvyufeng/ChatPDF)"
-    css = """.toast-wrap { display: none !important } """
     examples = ['Can you tell me about the NLP?', '介绍下NLP']
     chat_interface_stream = gr.ChatInterface(
         predict_stream,
@@ -79,9 +78,7 @@ if __name__ == '__main__':
         title=title,
         description=description,
         chatbot=chatbot_stream,
-        css=css,
         examples=examples,
-        theme='soft',
     )
 
     with gr.Blocks() as demo:

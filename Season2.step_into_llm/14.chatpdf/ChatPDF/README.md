@@ -4,32 +4,35 @@ The ChatPDF(PDF Chatbot) is an application that allows users to upload PDF files
 
 ## Technologies Used
 
-- MindSpore
-- MindNLP
+- MindSpore >= 2.6.0
+- MindNLP >= 0.4.0
 - ms2vec
 - msimilarities
-
-
-## Demo Video
-
-[Demo Video]()
-
-[![ChatPDF](./assets/chatpdf.png)]()
+- Python 3.11
 
 ## Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/lvyufeng/ChatPDF.git
+   git clone https://github.com/babahaochi/step_into_llm.git
+   cd step_into_llm/Season2.step_into_llm/14.chatpdf/ChatPDF
    ```
 
-2. Install the required dependencies:
+2. Create a virtual environment and install the required dependencies:
 
    ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
+## Migration Notes (MindNLP 0.4.0)
+
+This project has been updated to support MindSpore 2.6.0 and MindNLP 0.4.0. Key changes include:
+- Migrating tensor operations to use `mindnlp.core.ops`.
+- Updating imports to align with the new MindNLP directory structure.
+- Ensuring compatibility with the latest `PeftModel` and `AutoModel` APIs.
 ## Usage
 
 1. Run the application:

@@ -12,6 +12,7 @@ from typing import Union, List
 
 import jieba
 from loguru import logger
+from mindnlp.core import ops
 from mindnlp.peft import PeftModel
 from msimilarities import (
     EnsembleSimilarity,
@@ -376,7 +377,8 @@ class ChatPDF:
         for reference in reference_results:
             pairs.append([query, reference])
         inputs = self.rerank_tokenizer(pairs, padding=True, truncation=True, return_tensors='ms', max_length=512)
-        scores = self.rerank_model(**inputs, return_dict=True).logits.view(-1, ).float()
+        outputs = self.rerank_model(**inputs, return_dict=True)
+        scores = ops.reshape(outputs.logits, (-1,)).float()
 
         return scores
 
